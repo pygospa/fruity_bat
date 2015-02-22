@@ -24,8 +24,8 @@ class GameWindow < Gosu::Window
 
   def draw
     @background.draw(0,0,0)
-    @foreground.draw(@scroll_x,0,0)
-    @foreground.draw(@scroll_x - @foreground.width,0,0)
+    @foreground.draw(-@scroll_x,0,0)
+    @foreground.draw(-@scroll_x + @foreground.width,0,0)
   end
 end
 
