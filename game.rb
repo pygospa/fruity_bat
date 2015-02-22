@@ -4,8 +4,10 @@ class GameWindow < Gosu::Window
   def initialize(*args)
     super
     @scroll_x = 0
-    @background = Gosu::Image.new(self, 'images/background.png', false)
-    @foreground = Gosu::Image.new(self, 'images/foreground.png', true)
+    @images = {
+      background: Gosu::Image.new(self, 'images/background.png', false),
+      foreground: Gosu::Image.new(self, 'images/foreground.png', true),
+    }
   end
 
   def button_down(button)
@@ -17,15 +19,15 @@ class GameWindow < Gosu::Window
 
     # Repeat - once scroll_x (foreground picture) is out of window, start from
     # zero:
-    if @scroll_x > @foreground.width
+    if @scroll_x > @images[:foreground].width
       @scroll_x = 0
     end
   end
 
   def draw
-    @background.draw(0,0,0)
-    @foreground.draw(-@scroll_x,0,0)
-    @foreground.draw(-@scroll_x + @foreground.width,0,0)
+    @images[:background].draw(0,0,0)
+    @images[:foreground].draw(-@scroll_x,0,0)
+    @images[:foreground].draw(-@scroll_x + @images[:foreground].width,0,0)
   end
 end
 
