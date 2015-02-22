@@ -5,7 +5,7 @@ class GameWindow < Gosu::Window
     super
     @scroll_x = 0
     @background = Gosu::Image.new(self, 'images/background.png', false)
-    @foreground = Gosu::Image.new(self, 'images/foreground.png', false)
+    @foreground = Gosu::Image.new(self, 'images/foreground.png', true)
   end
 
   def button_down(button)
@@ -25,7 +25,7 @@ class GameWindow < Gosu::Window
   def draw
     @background.draw(0,0,0)
     @foreground.draw(@scroll_x,0,0)
-    
+    @foreground.draw(@scroll_x - @foreground.width,0,0)
   end
 end
 
