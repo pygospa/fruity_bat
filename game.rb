@@ -3,6 +3,7 @@ require 'defstruct'
 
 GameState = DefStruct.new{{
   scroll_x: 0,
+  player_y: 200,
 }}
 
 class GameWindow < Gosu::Window
@@ -11,6 +12,8 @@ class GameWindow < Gosu::Window
     @images = {
       background: Gosu::Image.new(self, 'images/background.png', false),
       foreground: Gosu::Image.new(self, 'images/foreground.png', true),
+      player:  Gosu::Image.new(self, 'images/fruity_1.png', true),
+
     }
 
     @state = GameState.new
@@ -34,6 +37,7 @@ class GameWindow < Gosu::Window
     @images[:background].draw(0,0,0)
     @images[:foreground].draw(-@state.scroll_x,0,0)
     @images[:foreground].draw(-@state.scroll_x + @images[:foreground].width,0,0)
+    @images[:player].draw(20,@state.player_y,0)
   end
 end
 
