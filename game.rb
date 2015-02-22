@@ -1,9 +1,12 @@
 require 'gosu'
 require 'defstruct'
 
+GRAVITY = 100 # pixels/s^2
+
 GameState = DefStruct.new{{
   scroll_x: 0,
   player_y: 200,
+  player_y_vel: 0,
 }}
 
 class GameWindow < Gosu::Window
@@ -31,6 +34,14 @@ class GameWindow < Gosu::Window
     if @state.scroll_x > @images[:foreground].width
       @state.scroll_x = 0
     end
+
+    # Movement: Gravity pulling on bat
+    # Update interval is given bei Gosu and it's given in miliseconds. We
+    # calculate the velocity in seconds, therefore the division by 1000.0
+    @state.player_y_vel += GRAVITY * (update_interval/1000.0)
+
+    # Apply the calculated pull on every update to the bats y coordinate
+    @state.player_y += @state.player_y_vel * (update_interval/1000.0)
   end
 
   def draw
