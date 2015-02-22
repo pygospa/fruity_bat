@@ -16,5 +16,5 @@ class GameWindow < Gosu::Window
   end
 end
 
-window = GameWindow.new(800,600,false)
+window = GameWindow.new(320,480,false)
 window.show
