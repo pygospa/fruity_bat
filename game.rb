@@ -1,18 +1,6 @@
 require 'gosu'
 require 'defstruct'
 
-Vec = struct.new(:x, :y) do
-  def set!(other)
-    x = other.x
-    y = other.y
-  end
-
-  def +=(other)
-    x += other.x
-    y += other.y
-  end
-end
-
 GRAVITY = Vec[0,600]    # pixel/s^2
 JUMP_VEL = Vec[0,300]   # pixel/s
 
