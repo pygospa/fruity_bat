@@ -16,7 +16,8 @@ class GameWindow < Gosu::Window
     @images = {
       background: Gosu::Image.new(self, 'images/background.png', false),
       foreground: Gosu::Image.new(self, 'images/foreground.png', true),
-      player:  Gosu::Image.new(self, 'images/fruity_1.png', true),
+      player:  Gosu::Image.new(self, 'images/fruity_1.png', false),
+      obstacle: Gosu::Image.new(self, 'images/obstacle.png', false),
     }
 
     @state = GameState.new
@@ -56,6 +57,11 @@ class GameWindow < Gosu::Window
     @images[:foreground].draw(-@state.scroll_x,0,0)
     @images[:foreground].draw(-@state.scroll_x + @images[:foreground].width,0,0)
     @images[:player].draw(20,@state.player_y,0)
+
+    @images[:obstacle].draw(200,-300,0)
+    scale(1,-1) do
+      @images[:obstacle].draw(200,-height-400,0)
+    end
   end
 end
 
