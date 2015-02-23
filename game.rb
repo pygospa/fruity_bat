@@ -25,7 +25,6 @@ class GameWindow < Gosu::Window
       player:  Gosu::Image.new(self, 'images/fruity_1.png', false),
       obstacle: Gosu::Image.new(self, 'images/obstacle.png', false),
     }
-
     @state = GameState.new
   end
 
@@ -37,12 +36,11 @@ class GameWindow < Gosu::Window
   end
 
   def spawn_obstacle
-    @state.obstacles << Vec[width, 200]
+    @state.obstacles << Vec[width, rand(50..320)]
   end
 
   def update
     dt = (update_interval/1000.0)
-
     @state.scroll_x += dt*OBSTACLE_SPEED*0.5
 
     # Repeat - once scroll_x (foreground picture) is out of window, start from
@@ -50,7 +48,6 @@ class GameWindow < Gosu::Window
     if @state.scroll_x > @images[:foreground].width
       @state.scroll_x = 0
     end
-
 
     # Movement: Gravity pulling on bat
     # Update interval is given bei Gosu and it's given in miliseconds. We
