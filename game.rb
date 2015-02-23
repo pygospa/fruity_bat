@@ -9,6 +9,7 @@ GameState = DefStruct.new{{
   scroll_x: 0,
   player_pos: Vec[0,0],
   player_vel: Vec[0,0],
+  obstacles: [] # array of Vec
 }}
 
 class GameWindow < Gosu::Window
@@ -25,11 +26,15 @@ class GameWindow < Gosu::Window
   end
 
   def button_down(button)
-    close if button == Gosu::KbEscape
-
-    if button == Gosu::KbSpace
-      @state.player_vel.set!(JUMP_VEL)
+    case button
+    when Gosu::KbEscape then close
+    when Gosu::KbSpace then @state.player_vel.set!(JUMP_VEL)
+    when Gosu::KbO then spawn_obstacle
     end
+  end
+
+  def spawn_obstacle
+    @state.obstacles << Vec[width, 200]
   end
 
   def update
@@ -51,6 +56,10 @@ class GameWindow < Gosu::Window
 
     # Apply the calculated pull on every update to the bats y coordinate
     @state.player_pos += dt*@state.player_vel
+
+    @state.obstacles.each do |obst|
+      obst.x -= 3
+    end
   end
 
   def draw
@@ -59,12 +68,15 @@ class GameWindow < Gosu::Window
     @images[:foreground].draw(-@state.scroll_x + @images[:foreground].width,0,0)
     @images[:player].draw(20,@state.player_pos.y,0)
 
-    @images[:obstacle].draw(200,-300,0)
-    scale(1,-1) do
-      @images[:obstacle].draw(200,-height-400,0)
+    @state.obstacles.each do |obst|
+      @images[:obstacle].draw(obst.x,-300,0)
+      scale(1,-1) do
+        @images[:obstacle].draw(obst.x,-height-400,0)
+      end
     end
   end
 end
+
 
 window = GameWindow.new(320,480,false)
 window.show
