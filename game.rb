@@ -1,8 +1,21 @@
 require 'gosu'
 require 'defstruct'
 
-GRAVITY = 600 # pixels/s^2
-JUMP_VEL = 300
+Vec = struct.new(:x, :y) do
+  def set!(other)
+    x = other.x
+    y = other.y
+  end
+
+  def +=(other)
+    x += other.x
+    y += other.y
+  end
+end
+
+GRAVITY = Vec[0,600]    # pixel/s^2
+JUMP_VEL = Vec[0,300]   # pixel/s
+
 
 Obstacle = DefStruct.new{{
   x: 0,
@@ -12,8 +25,8 @@ Obstacle = DefStruct.new{{
 
 GameState = DefStruct.new{{
   scroll_x: 0,
-  player_y: 200,
-  player_y_vel: 0,
+  palyer_pos: Vec[0,0],
+  player_vel: Vec[0,0],
 }}
 
 class GameWindow < Gosu::Window
@@ -33,7 +46,7 @@ class GameWindow < Gosu::Window
     close if button == Gosu::KbEscape
 
     if button == Gosu::KbSpace
-      @state.player_y_vel = -JUMP_VEL
+      @state.player_vel.set!(JUMP_VEL)
     end
   end
 
@@ -52,17 +65,17 @@ class GameWindow < Gosu::Window
     # Movement: Gravity pulling on bat
     # Update interval is given bei Gosu and it's given in miliseconds. We
     # calculate the velocity in seconds, therefore the division by 1000.0
-    @state.player_y_vel += GRAVITY * dt
+    @state.player_vel += dt*GRAVITY 
 
     # Apply the calculated pull on every update to the bats y coordinate
-    @state.player_y += @state.player_y_vel * dt 
+    @state.player_pos.y += @state.player_vel.y * dt 
   end
 
   def draw
     @images[:background].draw(0,0,0)
     @images[:foreground].draw(-@state.scroll_x,0,0)
     @images[:foreground].draw(-@state.scroll_x + @images[:foreground].width,0,0)
-    @images[:player].draw(20,@state.player_y,0)
+    @images[:player].draw(20,@state.player_pos.y,0)
 
     @images[:obstacle].draw(200,-300,0)
     scale(1,-1) do
