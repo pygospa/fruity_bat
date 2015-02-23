@@ -17,6 +17,10 @@ Vec = Struct.new(:x, :y) do
     Vec[x*scalar, y*scalar]
   end
 
+  def -@
+    Vec[-x,-y]
+  end
+
   # 5*Vec will yield an error, becuase ruby expects vec*scalar.
   # Therfore above method will create an error!
   #     Vec can't be coerced into Fixnum

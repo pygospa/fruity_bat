@@ -20,5 +20,9 @@ RSpec.describe Vec do
   it 'does vector subtraction' do
     expect(Vec[1,2] - Vec[3,4]).to eq(Vec[-2,-2])
   end
+
+  it 'does vector negation' do
+    expect(-Vec[1,2]).to eq(Vec[-1,-2])
+  end
 end
 
