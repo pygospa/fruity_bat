@@ -1,7 +1,8 @@
 require 'gosu'
 require 'defstruct'
 
-GRAVITY = 100 # pixels/s^2
+GRAVITY = 600 # pixels/s^2
+JUMP_VEL = 300
 
 GameState = DefStruct.new{{
   scroll_x: 0,
@@ -16,7 +17,6 @@ class GameWindow < Gosu::Window
       background: Gosu::Image.new(self, 'images/background.png', false),
       foreground: Gosu::Image.new(self, 'images/foreground.png', true),
       player:  Gosu::Image.new(self, 'images/fruity_1.png', true),
-
     }
 
     @state = GameState.new
@@ -24,6 +24,10 @@ class GameWindow < Gosu::Window
 
   def button_down(button)
     close if button == Gosu::KbEscape
+
+    if button == Gosu::KbSpace
+      @state.player_y_vel = -JUMP_VEL
+    end
   end
 
   def update
