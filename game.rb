@@ -3,7 +3,8 @@ require 'defstruct'
 require_relative 'vector'
 
 GRAVITY = Vec[0,600]    # pixel/s^2
-JUMP_VEL = Vec[0,-300]   # pixel/s
+JUMP_VEL = Vec[0,-300]  # pixel/s
+OBSTACLE_SPEED = 200    # pixel/s
 
 GameState = DefStruct.new{{
   scroll_x: 0,
@@ -38,7 +39,9 @@ class GameWindow < Gosu::Window
   end
 
   def update
-    @state.scroll_x +=3
+    dt = (update_interval/1000.0)
+
+    @state.scroll_x += dt*OBSTACLE_SPEED*0.5
 
     # Repeat - once scroll_x (foreground picture) is out of window, start from
     # zero:
@@ -46,8 +49,6 @@ class GameWindow < Gosu::Window
       @state.scroll_x = 0
     end
 
-    # time difference between this and last frame
-    dt = (update_interval/1000.0)
 
     # Movement: Gravity pulling on bat
     # Update interval is given bei Gosu and it's given in miliseconds. We
@@ -58,7 +59,7 @@ class GameWindow < Gosu::Window
     @state.player_pos += dt*@state.player_vel
 
     @state.obstacles.each do |obst|
-      obst.x -= 3
+      obst.x -= dt*OBSTACLE_SPEED
     end
   end
 
