@@ -1,19 +1,13 @@
 require 'gosu'
 require 'defstruct'
+require_relative 'vector'
 
 GRAVITY = Vec[0,600]    # pixel/s^2
-JUMP_VEL = Vec[0,300]   # pixel/s
-
-
-Obstacle = DefStruct.new{{
-  x: 0,
-  y: 0,
-}}
-  
+JUMP_VEL = Vec[0,-300]   # pixel/s
 
 GameState = DefStruct.new{{
   scroll_x: 0,
-  palyer_pos: Vec[0,0],
+  player_pos: Vec[0,0],
   player_vel: Vec[0,0],
 }}
 
@@ -56,7 +50,7 @@ class GameWindow < Gosu::Window
     @state.player_vel += dt*GRAVITY 
 
     # Apply the calculated pull on every update to the bats y coordinate
-    @state.player_pos.y += @state.player_vel.y * dt 
+    @state.player_pos += dt*@state.player_vel
   end
 
   def draw
