@@ -35,13 +35,16 @@ class GameWindow < Gosu::Window
       @state.scroll_x = 0
     end
 
+    # time difference between this and last frame
+    dt = (update_interval/1000.0)
+
     # Movement: Gravity pulling on bat
     # Update interval is given bei Gosu and it's given in miliseconds. We
     # calculate the velocity in seconds, therefore the division by 1000.0
-    @state.player_y_vel += GRAVITY * (update_interval/1000.0)
+    @state.player_y_vel += GRAVITY * dt
 
     # Apply the calculated pull on every update to the bats y coordinate
-    @state.player_y += @state.player_y_vel * (update_interval/1000.0)
+    @state.player_y += @state.player_y_vel * dt 
   end
 
   def draw
