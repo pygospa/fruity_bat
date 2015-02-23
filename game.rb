@@ -4,6 +4,12 @@ require 'defstruct'
 GRAVITY = 600 # pixels/s^2
 JUMP_VEL = 300
 
+Obstacle = DefStruct.new{{
+  x: 0,
+  y: 0,
+}}
+  
+
 GameState = DefStruct.new{{
   scroll_x: 0,
   player_y: 200,
