@@ -6,7 +6,7 @@ GRAVITY = Vec[0,600]    # pixel/s^2
 JUMP_VEL = Vec[0,-300]  # pixel/s
 OBSTACLE_SPEED = 200    # pixel/s
 OBSTACLE_SPAWN_INTERVAL = 1.3 # seconds
-OBSTACLE_GAP = 100      # pixel
+OBSTACLE_GAP = 140      # pixel
 DEATH_VELOCITY = Vec[50, -500] # pixel/s
 DEATH_ROTATIONAL_VEL = 360 # degree/sec
 
@@ -21,9 +21,10 @@ Rect = DefStruct.new{{
 end
 
 GameState = DefStruct.new{{
+  started: false,
   alive: true,
   scroll_x: 0,
-  player_pos: Vec[20,0],
+  player_pos: Vec[20,220],
   player_vel: Vec[0,0],
   player_rotation: 0,
   obstacles: [], # array of Vec
@@ -45,12 +46,15 @@ class GameWindow < Gosu::Window
   def button_down(button)
     case button
     when Gosu::KbEscape then close
-    when Gosu::KbSpace then @state.player_vel.set!(JUMP_VEL) if @state.alive
+    when Gosu::KbSpace 
+      @state.player_vel.set!(JUMP_VEL) if @state.alive
+      @state.started = true
     end
   end
 
   def update
     dt = (update_interval/1000.0)
+
     @state.scroll_x += dt*OBSTACLE_SPEED*0.5
 
     # Repeat - once scroll_x (foreground picture) is out of window, start from
@@ -58,6 +62,8 @@ class GameWindow < Gosu::Window
     if @state.scroll_x > @images[:foreground].width
       @state.scroll_x = 0
     end
+
+    return unless @state.started
 
     # Movement: Gravity pulling on bat
     # Update interval is given bei Gosu and it's given in miliseconds. We
