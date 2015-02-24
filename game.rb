@@ -91,6 +91,8 @@ class GameWindow < Gosu::Window
       obst.pos.x -= dt*OBSTACLE_SPEED
     end
 
+    @state.obstacles.reject! { |obst| obst.pos.x < - @images[:obstacle].width }
+
     if @state.alive && player_is_colliding?
       @state.alive = false
       @state.player_vel.set!(DEATH_VELOCITY)
