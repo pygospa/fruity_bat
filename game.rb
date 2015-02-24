@@ -109,7 +109,8 @@ class GameWindow < Gosu::Window
 
   def player_is_colliding?
     player_r = player_rect
-    obstacles_rects.find { |obst_r| rects_intersect?(player_r, obst_r) }
+    return true if obstacles_rects.find { |obst_r| rects_intersect?(player_r, obst_r) }
+    not rects_intersect?(player_r, Rect.new(pos: Vec[0,0], size: Vec[width, height]))
   end
 
   def rects_intersect?(r1, r2)
@@ -194,7 +195,6 @@ class GameWindow < Gosu::Window
     end
   end
 end
-
 
 window = GameWindow.new(320,480,false)
 window.show
