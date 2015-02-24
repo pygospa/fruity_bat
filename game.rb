@@ -49,10 +49,6 @@ class GameWindow < Gosu::Window
     end
   end
 
-  def spawn_obstacle
-    @state.obstacles << Vec[width, rand(50..320)]
-  end
-
   def update
     dt = (update_interval/1000.0)
     @state.scroll_x += dt*OBSTACLE_SPEED*0.5
@@ -74,7 +70,7 @@ class GameWindow < Gosu::Window
     # Countdown 
     @state.obstacle_countdown -= dt
     if @state.obstacle_countdown <= 0
-      spawn_obstacle
+      @state.obstacles << Vec[width, rand(50..320)]
       @state.obstacle_countdown += OBSTACLE_SPAWN_INTERVAL
     end
 
