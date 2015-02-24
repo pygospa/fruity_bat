@@ -9,6 +9,7 @@ OBSTACLE_SPAWN_INTERVAL = 1.3 # seconds
 OBSTACLE_GAP = 140      # pixel
 DEATH_VELOCITY = Vec[50, -500] # pixel/s
 DEATH_ROTATIONAL_VEL = 360 # degree/sec
+RESTART_INTERVAL = 3 #s
 
 Rect = DefStruct.new{{
   pos: Vec[0,0],
@@ -34,7 +35,8 @@ GameState = DefStruct.new{{
   player_vel: Vec[0,0],
   player_rotation: 0,
   obstacles: [], # array of Obstacle
-  obstacle_countdown: OBSTACLE_SPAWN_INTERVAL
+  obstacle_countdown: OBSTACLE_SPAWN_INTERVAL,
+  restart_countdown: RESTART_INTERVAL
 }}
 
 class GameWindow < Gosu::Window
@@ -80,11 +82,13 @@ class GameWindow < Gosu::Window
     # Apply the calculated pull on every update to the bats y coordinate
     @state.player_pos += dt*@state.player_vel
 
-    # Countdown 
-    @state.obstacle_countdown -= dt
-    if @state.obstacle_countdown <= 0
-      @state.obstacles << Obstacle.new(pos: Vec[width, rand(50..320)])
-      @state.obstacle_countdown += OBSTACLE_SPAWN_INTERVAL
+    if @state.alive
+      # Countdown 
+      @state.obstacle_countdown -= dt
+      if @state.obstacle_countdown <= 0
+        @state.obstacles << Obstacle.new(pos: Vec[width, rand(50..320)])
+        @state.obstacle_countdown += OBSTACLE_SPAWN_INTERVAL
+      end
     end
 
     @state.obstacles.each do |obst|
@@ -104,7 +108,15 @@ class GameWindow < Gosu::Window
 
     unless @state.alive
       @state.player_rotation += dt*DEATH_ROTATIONAL_VEL
+      @state.restart_countdown -= dt
+      if @state.restart_countdown <= 0
+        restart_game
+      end
     end
+  end
+
+  def restart_game
+    @state = GameState.new(scroll_x: @state.scroll_x)
   end
 
   def player_is_colliding?
