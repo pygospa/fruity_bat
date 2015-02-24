@@ -139,15 +139,15 @@ class GameWindow < Gosu::Window
   end
 
   def debug_draw
-    draw_debug_rect(player_rect)
+    color = player_is_colliding? ? Gosu::Color::RED : Gosu::Color::GREEN
+    draw_debug_rect(player_rect, color)
 
     obstacles_rects.each do |obst_rect|
       draw_debug_rect(obst_rect)
     end
   end
 
-  def draw_debug_rect(rect)
-    color = Gosu::Color::GREEN
+  def draw_debug_rect(rect, color = Gosu::Color::GREEN)
     x = rect.pos.x
     y = rect.pos.y
     w = rect.size.x
