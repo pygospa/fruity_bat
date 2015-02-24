@@ -7,6 +7,8 @@ JUMP_VEL = Vec[0,-300]  # pixel/s
 OBSTACLE_SPEED = 200    # pixel/s
 OBSTACLE_SPAWN_INTERVAL = 1.3 # seconds
 OBSTACLE_GAP = 100      # pixel
+DEATH_VELOCITY = Vec[50, -500] # pixel/s
+DEATH_ROTATIONAL_VEL = 360 # degree/sec
 
 Rect = DefStruct.new{{
   pos: Vec[0,0],
@@ -23,6 +25,7 @@ GameState = DefStruct.new{{
   scroll_x: 0,
   player_pos: Vec[20,0],
   player_vel: Vec[0,0],
+  player_rotation: 0,
   obstacles: [], # array of Vec
   obstacle_countdown: OBSTACLE_SPAWN_INTERVAL
 }}
@@ -42,7 +45,7 @@ class GameWindow < Gosu::Window
   def button_down(button)
     case button
     when Gosu::KbEscape then close
-    when Gosu::KbSpace then @state.player_vel.set!(JUMP_VEL)
+    when Gosu::KbSpace then @state.player_vel.set!(JUMP_VEL) if @state.alive
     end
   end
 
@@ -79,8 +82,13 @@ class GameWindow < Gosu::Window
       obst.x -= dt*OBSTACLE_SPEED
     end
 
-    if player_is_colliding?
+    if @state.alive && player_is_colliding?
       @state.alive = false
+      @state.player_vel.set!(DEATH_VELOCITY)
+    end
+
+    unless @state.alive
+      @state.player_rotation += dt*DEATH_ROTATIONAL_VEL
     end
   end
 
@@ -92,11 +100,11 @@ class GameWindow < Gosu::Window
   def rects_intersect?(r1, r2)
     # totally to the left or right of r2
     return false if r1.max_x < r2.min_x
-    return false if r1.min_x < r2.max_x
+    return false if r1.min_x > r2.max_x
 
     # totally to the top or bottom of r2
-    return false if r1.min_y < r2.max_y
-    return false if r1.min_y < r2.max_y
+    return false if r1.min_y > r2.max_y
+    return false if r1.max_y < r2.min_y
 
     true
   end
@@ -116,9 +124,13 @@ class GameWindow < Gosu::Window
       end
     end
 
-    @images[:player].draw(@state.player_pos.x,@state.player_pos.y,0)
+    @images[:player].draw_rot(
+      @state.player_pos.x,@state.player_pos.y,
+      0, @state.player_rotation,
+      0,0)
 
-    debug_draw
+
+#   debug_draw
   end
 
   def player_rect
