@@ -57,6 +57,8 @@ class GameWindow < Gosu::Window
       obstacle: Gosu::Image.new(self, 'images/obstacle.png', false),
     }
     @state = GameState.new
+
+    @sound = Gosu::Sample.new(self, 'sounds/buzzer.mp3')
   end
 
   def button_down(button)
@@ -110,6 +112,7 @@ class GameWindow < Gosu::Window
 
     if @state.alive && player_is_colliding?
       @state.alive = false
+      @sound.play(1,1)
       @state.player_vel.set!(DEATH_VELOCITY)
     end
 
