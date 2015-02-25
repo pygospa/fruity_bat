@@ -10,6 +10,8 @@ OBSTACLE_GAP = 140      # pixel
 DEATH_VELOCITY = Vec[50, -500] # pixel/s
 DEATH_ROTATIONAL_VEL = 360 # degree/sec
 RESTART_INTERVAL = 3 #s
+ANIMATION_FRAMES = 3 # Frames
+ANIMATION_INTERVAL = 5 # Frames
 
 Rect = DefStruct.new{{
   pos: Vec[0,0],
@@ -36,7 +38,9 @@ GameState = DefStruct.new{{
   player_rotation: 0,
   obstacles: [], # array of Obstacle
   obstacle_countdown: OBSTACLE_SPAWN_INTERVAL,
-  restart_countdown: RESTART_INTERVAL
+  restart_countdown: RESTART_INTERVAL,
+  animation_countdown: ANIMATION_INTERVAL,
+  animation_frame: 0
 }}
 
 class GameWindow < Gosu::Window
@@ -46,7 +50,10 @@ class GameWindow < Gosu::Window
     @images = {
       background: Gosu::Image.new(self, 'images/background.png', false),
       foreground: Gosu::Image.new(self, 'images/foreground.png', true),
-      player:  Gosu::Image.new(self, 'images/fruity_1.png', false),
+      #player:  Gosu::Image.new(self, 'images/fruity_1.png', false),
+      player: [Gosu::Image.new(self, 'images/fruity_1.png', false),
+               Gosu::Image.new(self, 'images/fruity_2.png', false),
+               Gosu::Image.new(self, 'images/fruity_3.png', false)],
       obstacle: Gosu::Image.new(self, 'images/obstacle.png', false),
     }
     @state = GameState.new
@@ -113,6 +120,19 @@ class GameWindow < Gosu::Window
         restart_game
       end
     end
+
+    @state.animation_countdown -= 1
+    if @state.animation_countdown < 0
+      @state.animation_countdown = ANIMATION_INTERVAL
+      if @state.animation_frame < (ANIMATION_FRAMES - 1)
+        @state.animation_frame += 1
+      else
+        @state.animation_frame = 0
+      end
+    end
+    #puts @state.animation_frame.to_s
+
+#    puts @state.animation_counter.to_s
   end
 
   def restart_game
@@ -152,20 +172,20 @@ class GameWindow < Gosu::Window
       end
     end
 
-    @images[:player].draw_rot(
+    (@images[:player])[@state.animation_frame].draw_rot(
       @state.player_pos.x,@state.player_pos.y,
       0, @state.player_rotation,
       0,0)
 
     @font.draw_rel(@state.score.to_s, width/2.0, 60, 0, 0.5, 0.5)
-
-#   debug_draw
+    #debug_draw
   end
 
   def player_rect
     Rect.new(
       pos: @state.player_pos,
-      size: Vec[@images[:player].width, @images[:player].height])
+      size: Vec[(@images[:player])[@state.animation_frame].width, 
+                (@images[:player])[@state.animation_frame].height])
   end
 
   def obstacles_rects
