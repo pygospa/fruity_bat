@@ -12,6 +12,7 @@ DEATH_ROTATIONAL_VEL = 360 # degree/sec
 RESTART_INTERVAL = 3 #s
 ANIMATION_FRAMES = 3 # Frames
 ANIMATION_INTERVAL = 5 # Frames
+HIGHSCORE_FILE = '.highscore'
 
 Rect = DefStruct.new{{
   pos: Vec[0,0],
@@ -40,7 +41,9 @@ GameState = DefStruct.new{{
   obstacle_countdown: OBSTACLE_SPAWN_INTERVAL,
   restart_countdown: RESTART_INTERVAL,
   animation_countdown: ANIMATION_INTERVAL,
-  animation_frame: 0
+  animation_frame: 0,
+  highscore: 0,
+  congratz: false
 }}
 
 class GameWindow < Gosu::Window
@@ -50,15 +53,23 @@ class GameWindow < Gosu::Window
     @images = {
       background: Gosu::Image.new(self, 'images/background.png', false),
       foreground: Gosu::Image.new(self, 'images/foreground.png', true),
-      #player:  Gosu::Image.new(self, 'images/fruity_1.png', false),
       player: [Gosu::Image.new(self, 'images/fruity_1.png', false),
                Gosu::Image.new(self, 'images/fruity_2.png', false),
                Gosu::Image.new(self, 'images/fruity_3.png', false)],
       obstacle: Gosu::Image.new(self, 'images/obstacle.png', false),
     }
+    @sound = Gosu::Sample.new(self, 'sounds/buzzer.wav')
+
     @state = GameState.new
 
-    @sound = Gosu::Sample.new(self, 'sounds/buzzer.mp3')
+    unless File.exist?(HIGHSCORE_FILE)
+      file = File.new(HIGHSCORE_FILE, 'w') 
+      file.puts(@state.highscore.to_s)
+      file.close
+    end
+
+    @state.highscore = File.read(HIGHSCORE_FILE).to_i
+    puts @state.highscore.to_s
   end
 
   def button_down(button)
@@ -117,6 +128,9 @@ class GameWindow < Gosu::Window
     end
 
     unless @state.alive
+      if @state.highscore < @state.score
+        @state.congratz = true
+      end
       @state.player_rotation += dt*DEATH_ROTATIONAL_VEL
       @state.restart_countdown -= dt
       if @state.restart_countdown <= 0
@@ -133,13 +147,19 @@ class GameWindow < Gosu::Window
         @state.animation_frame = 0
       end
     end
-    #puts @state.animation_frame.to_s
-
-#    puts @state.animation_counter.to_s
   end
 
   def restart_game
-    @state = GameState.new(scroll_x: @state.scroll_x)
+    if @state.congratz
+      File.open(HIGHSCORE_FILE,'w') { |file| file.puts(@state.score.to_s) }
+      puts File.read(HIGHSCORE_FILE)
+      @state = GameState.new(scroll_x: @state.scroll_x, 
+                             highscore: File.read(HIGHSCORE_FILE).to_i)
+      puts @state.highscore
+    else
+      @state = GameState.new(scroll_x: @state.scroll_x)
+      puts @state.highscore
+    end
   end
 
   def player_is_colliding?
@@ -180,8 +200,14 @@ class GameWindow < Gosu::Window
       0, @state.player_rotation,
       0,0)
 
-    @font.draw_rel(@state.score.to_s, width/2.0, 60, 0, 0.5, 0.5)
-    #debug_draw
+    if @state.congratz
+      @font.draw_rel("NEW HIGHSCORE!", width/2.0, 200, 0, 0.5, 0.5)
+      @font.draw_rel(@state.score.to_s, width/2.0, 260, 0, 0.5, 0.5)
+    else
+      @font.draw_rel(@state.score.to_s, width/2.0, 60, 0, 0.5, 0.5)
+    end
+
+#    debug_draw
   end
 
   def player_rect
