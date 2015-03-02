@@ -69,7 +69,6 @@ class GameWindow < Gosu::Window
     end
 
     @state.highscore = File.read(HIGHSCORE_FILE).to_i
-    puts @state.highscore.to_s
   end
 
   def button_down(button)
@@ -152,14 +151,9 @@ class GameWindow < Gosu::Window
   def restart_game
     if @state.congratz
       File.open(HIGHSCORE_FILE,'w') { |file| file.puts(@state.score.to_s) }
-      puts File.read(HIGHSCORE_FILE)
-      @state = GameState.new(scroll_x: @state.scroll_x, 
-                             highscore: File.read(HIGHSCORE_FILE).to_i)
-      puts @state.highscore
-    else
-      @state = GameState.new(scroll_x: @state.scroll_x)
-      puts @state.highscore
     end
+    @state = GameState.new(scroll_x: @state.scroll_x,
+                           highscore: File.read(HIGHSCORE_FILE).to_i)
   end
 
   def player_is_colliding?
