@@ -58,7 +58,8 @@ class GameWindow < Gosu::Window
                Gosu::Image.new(self, 'images/fruity_3.png', false)],
       obstacle: Gosu::Image.new(self, 'images/obstacle.png', false),
     }
-    @sound = Gosu::Sample.new(self, 'sounds/buzzer.wav')
+    @sound = Gosu::Sample.new(self, 'sounds/flappy_vampy.ogg')
+    @sound.play(1,1,true)
 
     @state = GameState.new
 
@@ -122,7 +123,6 @@ class GameWindow < Gosu::Window
 
     if @state.alive && player_is_colliding?
       @state.alive = false
-      @sound.play(1,1)
       @state.player_vel.set!(DEATH_VELOCITY)
     end
 
